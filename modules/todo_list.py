@@ -5,6 +5,8 @@ from modules.task import Task
 
 class TodoList(ft.UserControl):
     def build(self):
+        self.items_left = ft.Text()
+        self.update_active_items_left(0)
         self.new_task = ft.TextField(hint_text="Whats needs to be done?", expand=True)
         self.tasks = ft.Column()
 
@@ -14,10 +16,13 @@ class TodoList(ft.UserControl):
             tabs=[ft.Tab(text="all"), ft.Tab(text="active"), ft.Tab(text="completed")],
         )
 
-        # application's root control (i.e. "view") containing all other controls
-        return ft.Column(
+        self.view = ft.Column(
             width=600,
             controls=[
+                ft.Row(
+                    [ft.Text(value="Todos", style="headlineMedium")],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                ),
                 ft.Row(
                     controls=[
                         self.new_task,
@@ -31,10 +36,24 @@ class TodoList(ft.UserControl):
                     controls=[
                         self.filter,
                         self.tasks,
+                        ft.Row(
+                            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                            vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                            controls=[
+                                self.items_left,
+                                ft.OutlinedButton(
+                                    text="Clear completed", on_click=self.clear_clicked
+                                ),
+                            ],
+                        ),
                     ],
                 ),
             ],
         )
+        return self.view
+
+    def update_active_items_left(self, tasks_left: int):
+        self.items_left.value = f"{tasks_left} active item(s) left"
 
     def update(self):
         status = self.filter.tabs[self.filter.selected_index].text
@@ -44,6 +63,10 @@ class TodoList(ft.UserControl):
                 or (status == "active" and not task.completed)
                 or (status == "completed" and task.completed)
             )
+
+        tasks_left_count = [task.completed for task in self.tasks.controls].count(False)
+        self.update_active_items_left(tasks_left_count)
+
         super().update()
 
     def task_delete(self, task):
@@ -67,4 +90,10 @@ class TodoList(ft.UserControl):
         self.update()
 
     def tabs_changed(self, e):
+        self.update()
+
+    def clear_clicked(self, e):
+        completed_tasks = [task for task in self.tasks.controls if task.completed]
+        for task in completed_tasks:
+            self.task_delete(task)
         self.update()
