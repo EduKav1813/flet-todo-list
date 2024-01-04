@@ -1,5 +1,7 @@
 import flet as ft
 
+from modules.task import Task
+
 
 class TodoList(ft.UserControl):
     def build(self):
@@ -22,10 +24,15 @@ class TodoList(ft.UserControl):
             ],
         )
 
+    def task_delete(self, task):
+        self.tasks.controls.remove(task)
+        self.update()
+
     def add_clicked(self, e):
         label = self.new_task.value
         if label == "":
             return
-        self.tasks.controls.append(ft.Checkbox(label=label))
+        task = Task(task_name=label, task_delete=self.task_delete)
+        self.tasks.controls.append(task)
         self.new_task.value = ""
         self.update()

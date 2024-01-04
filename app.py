@@ -1,5 +1,7 @@
 import flet as ft
+
 from modules.todo_list import TodoList
+
 
 def main(page: ft.Page):
     page.title = "ToDo App"
@@ -7,10 +9,11 @@ def main(page: ft.Page):
     page.update()
 
     # create application instance
-    todo = TodoList()
+    todo1 = TodoList()
 
     # add application's root control to the page
-    page.add(todo)
+    page.add(todo1)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     ft.app(target=main)
