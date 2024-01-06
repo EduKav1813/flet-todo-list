@@ -131,7 +131,7 @@ class Task(ft.UserControl):
         self.update()
 
     def save_description_clicked(self, e):
-        self.description = self.edit_description.value
+        self.description = str(self.edit_description.value).strip()
         self.description_label.value = self.description
         self.description_view.visible = True
         self.edit_description_view.visible = False
