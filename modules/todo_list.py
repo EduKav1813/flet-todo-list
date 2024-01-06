@@ -82,6 +82,8 @@ class TodoList(ft.UserControl):
             return
         task = Task(
             task_name=label,
+            description="Details",
+            completed=False,
             task_status_change=self.task_status_changed,
             task_delete=self.task_delete,
         )
