@@ -3,7 +3,13 @@ import flet as ft
 
 class Task(ft.UserControl):
     def __init__(
-        self, task_name, description, completed, task_status_change, task_delete
+        self,
+        task_name,
+        description,
+        completed,
+        task_status_change,
+        task_delete,
+        description_updated,
     ):
         super().__init__()
         self.completed = completed
@@ -11,6 +17,7 @@ class Task(ft.UserControl):
         self.description = description
         self.task_status_change = task_status_change
         self.task_delete = task_delete
+        self.description_updated = description_updated
 
     def delete_clicked(self, e):
         self.task_delete(self)
@@ -129,6 +136,7 @@ class Task(ft.UserControl):
         self.description_view.visible = True
         self.edit_description_view.visible = False
         self.update()
+        self.description_updated()
 
     def status_changed(self, e):
         self.completed = self.display_task.value

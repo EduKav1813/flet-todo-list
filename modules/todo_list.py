@@ -1,6 +1,7 @@
 import flet as ft
 
 from modules.task import Task
+from modules.db import Database, TasksTable, Session
 
 
 class TodoList(ft.UserControl):
@@ -9,6 +10,8 @@ class TodoList(ft.UserControl):
         self.update_active_items_left(0)
         self.new_task = ft.TextField(hint_text="Whats needs to be done?", expand=True)
         self.tasks = ft.Column()
+        self.database = Database()
+        self.load_tasks_from_database()
 
         self.filter = ft.Tabs(
             selected_index=0,
@@ -52,6 +55,36 @@ class TodoList(ft.UserControl):
         )
         return self.view
 
+    def update_database(self) -> None:
+        with Session(self.database.engine) as session:
+            if session.query(TasksTable).count() > 0:
+                session.query(TasksTable).delete()
+
+            for task in self.tasks.controls:
+                new_task = TasksTable(
+                    name=task.task_name,
+                    description=task.description,
+                    completed=task.completed,
+                )
+                session.add(new_task)
+
+            session.commit()
+
+    def load_tasks_from_database(self) -> None:
+        with Session(self.database.engine) as session:
+            if session.query(TasksTable).count() > 0:
+                tasks = session.query(TasksTable).all()
+                for task in tasks:
+                    new_task = Task(
+                        task_name=task.name,
+                        description=task.description,
+                        completed=task.completed,
+                        task_status_change=self.task_status_changed,
+                        task_delete=self.task_delete,
+                        description_updated=self.description_updated,
+                    )
+                    self.tasks.controls.append(new_task)
+
     def update_active_items_left(self, tasks_left: int):
         self.items_left.value = f"{tasks_left} active item(s) left"
 
@@ -72,9 +105,11 @@ class TodoList(ft.UserControl):
     def task_delete(self, task):
         self.tasks.controls.remove(task)
         self.update()
+        self.update_database()
 
     def task_status_changed(self):
         self.update()
+        self.update_database()
 
     def add_clicked(self, e):
         label = self.new_task.value
@@ -86,10 +121,12 @@ class TodoList(ft.UserControl):
             completed=False,
             task_status_change=self.task_status_changed,
             task_delete=self.task_delete,
+            description_updated=self.description_updated,
         )
         self.tasks.controls.append(task)
         self.new_task.value = ""
         self.update()
+        self.update_database()
 
     def tabs_changed(self, e):
         self.update()
@@ -99,3 +136,8 @@ class TodoList(ft.UserControl):
         for task in completed_tasks:
             self.task_delete(task)
         self.update()
+        self.update_database()
+
+    def description_updated(self):
+        self.update()
+        self.update_database()
