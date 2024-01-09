@@ -85,6 +85,7 @@ class TodoList(ft.UserControl):
                     )
                     self.tasks.controls.append(new_task)
 
+
     def update_active_items_left(self, tasks_left: int):
         self.items_left.value = f"{tasks_left} active item(s) left"
 
@@ -99,6 +100,7 @@ class TodoList(ft.UserControl):
 
         tasks_left_count = [task.completed for task in self.tasks.controls].count(False)
         self.update_active_items_left(tasks_left_count)
+        self.update_database()
 
         super().update()
 
