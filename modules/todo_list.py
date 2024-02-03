@@ -58,6 +58,7 @@ class TodoList(ft.UserControl):
         return self.view
 
     def update_database(self) -> None:
+        """A method that saves the current state of the TodoList (Tasks) into the database."""
         with Session(self.database.engine) as session:
             if session.query(TasksTable).count() > 0:
                 session.query(TasksTable).delete()
@@ -73,6 +74,7 @@ class TodoList(ft.UserControl):
             session.commit()
 
     def load_tasks_from_database(self) -> None:
+        """A method to set the current state of the TodoList (Tasks) from the database."""
         with Session(self.database.engine) as session:
             if session.query(TasksTable).count() > 0:
                 tasks = session.query(TasksTable).all()
@@ -88,6 +90,11 @@ class TodoList(ft.UserControl):
                     self.tasks.controls.append(new_task)
 
     def update_active_items_left(self, tasks_left: int):
+        """Method to update the 'active items left' label.
+
+        Args:
+            tasks_left (int): The current amount of tasks left.
+        """
         self.items_left.value = f"{tasks_left} active item(s) left"
 
     def update(self):
@@ -105,14 +112,27 @@ class TodoList(ft.UserControl):
 
         super().update()
 
-    def task_delete(self, task):
+    def task_delete(self, task: Task) -> None:
+        """Remove the given task from the TodoList
+
+        Args:
+            task (Task): Task to delete.
+        """
         self.tasks.controls.remove(task)
         self.update()
 
-    def task_status_changed(self):
+    def task_status_changed(self) -> None:
+        """This method handles the event when the status of the Task in the TodoList was changed."""
         self.update()
 
-    def add_clicked(self, e):
+    def add_clicked(self, e) -> None:
+        """This method handles adding the new task in the TodoList, when user clicks the 'Add' button.
+
+        If the Task name is empty, task will not be created.
+
+        Args:
+            e (_type_): _description_
+        """
         label = self.new_task.value
         if label == "":
             return
@@ -128,14 +148,27 @@ class TodoList(ft.UserControl):
         self.new_task.value = ""
         self.update()
 
-    def tabs_changed(self, e):
+    def tabs_changed(self, e) -> None:
+        """This method handles the event of the user changing the current selected tab on the TodoList.
+
+        Args:
+            e (_type_): _description_
+        """
         self.update()
 
-    def clear_clicked(self, e):
+    def clear_clicked(self, e) -> None:
+        """This method handles the even of the clicking the 'Clear' button.
+        This button clears all tasks that are in the 'completed' state.
+        Tasks that are 'active' will remain on the list.
+
+        Args:
+            e (_type_): _description_
+        """
         completed_tasks = [task for task in self.tasks.controls if task.completed]
         for task in completed_tasks:
             self.task_delete(task)
         self.update()
 
-    def description_updated(self):
+    def description_updated(self) -> None:
+        """This method handles the event of the user modifying the description of the Task on the List."""
         self.update()

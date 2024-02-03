@@ -4,17 +4,17 @@ from modules.todo_list import TodoList
 
 
 def main(page: ft.Page):
+    """Main function that is used to start the application with Flet"""
     page.title = "ToDo App"
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.scroll = "adaptive"
     page.theme_mode = ft.ThemeMode.LIGHT
     page.update()
-    
 
-    # create application instance
+    # Create application instance
     todo1 = TodoList()
 
-    # add application's root control to the page
+    # Add application's root control to the page
     page.add(todo1)
 
 
