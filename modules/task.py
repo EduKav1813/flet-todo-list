@@ -8,9 +8,9 @@ class Task(ft.UserControl):
         task_name: str,
         description: str,
         completed: str,
-        task_status_change: Callable,
-        task_delete: Callable,
-        description_updated: Callable,
+        bind_task_status_change: Callable,
+        bind_task_delete: Callable,
+        bind_description_updated: Callable,
     ):
         super().__init__()
         # Values held by the task
@@ -19,9 +19,9 @@ class Task(ft.UserControl):
         self.description = description
 
         # Methods from TodoList that will be called on their respective actions:
-        self.task_status_change = task_status_change
-        self.task_delete = task_delete
-        self.description_updated = description_updated
+        self.bind_task_status_change = bind_task_status_change
+        self.bind_task_delete = bind_task_delete
+        self.bind_description_updated = bind_description_updated
 
     def delete_clicked(self, e) -> None:
         """Event handler for when the task is deleted.
@@ -29,7 +29,7 @@ class Task(ft.UserControl):
         Args:
             e (_type_): _description_
         """
-        self.task_delete(self)
+        self.bind_task_delete(self)
 
     def build(self):
         self.display_task = ft.Checkbox(
@@ -177,7 +177,7 @@ class Task(ft.UserControl):
         self.description_view.visible = True
         self.edit_description_view.visible = False
         self.update()
-        self.description_updated()
+        self.bind_description_updated()
 
     def status_changed(self, e) -> None:
         """Event handler for when the status of the task is changed.
@@ -187,4 +187,4 @@ class Task(ft.UserControl):
             e (_type_): _description_
         """
         self.completed = self.display_task.value
-        self.task_status_change()
+        self.bind_task_status_change()

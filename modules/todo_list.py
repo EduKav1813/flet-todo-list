@@ -17,7 +17,7 @@ class TodoList(ft.UserControl):
 
         self.filter = ft.Tabs(
             selected_index=0,
-            on_change=self.tabs_changed,
+            on_change=self.bind_tabs_changed,
             tabs=[ft.Tab(text="all"), ft.Tab(text="active"), ft.Tab(text="completed")],
         )
 
@@ -83,9 +83,9 @@ class TodoList(ft.UserControl):
                         task_name=task.name,
                         description=task.description,
                         completed=task.completed,
-                        task_status_change=self.task_status_changed,
-                        task_delete=self.task_delete,
-                        description_updated=self.description_updated,
+                        bind_task_status_change=self.bind_task_status_changed,
+                        bind_task_delete=self.bind_task_delete,
+                        bind_description_updated=self.bind_description_updated,
                     )
                     self.tasks.controls.append(new_task)
 
@@ -112,7 +112,7 @@ class TodoList(ft.UserControl):
 
         super().update()
 
-    def task_delete(self, task: Task) -> None:
+    def bind_task_delete(self, task: Task) -> None:
         """Remove the given task from the TodoList
 
         Args:
@@ -121,7 +121,7 @@ class TodoList(ft.UserControl):
         self.tasks.controls.remove(task)
         self.update()
 
-    def task_status_changed(self) -> None:
+    def bind_task_status_changed(self) -> None:
         """This method handles the event when the status of the Task in the TodoList was changed."""
         self.update()
 
@@ -140,15 +140,15 @@ class TodoList(ft.UserControl):
             task_name=label,
             description="Details",
             completed=False,
-            task_status_change=self.task_status_changed,
-            task_delete=self.task_delete,
-            description_updated=self.description_updated,
+            bind_task_status_change=self.bind_task_status_changed,
+            bind_task_delete=self.bind_task_delete,
+            bind_description_updated=self.bind_description_updated,
         )
         self.tasks.controls.append(task)
         self.new_task.value = ""
         self.update()
 
-    def tabs_changed(self, e) -> None:
+    def bind_tabs_changed(self, e) -> None:
         """This method handles the event of the user changing the current selected tab on the TodoList.
 
         Args:
@@ -166,9 +166,9 @@ class TodoList(ft.UserControl):
         """
         completed_tasks = [task for task in self.tasks.controls if task.completed]
         for task in completed_tasks:
-            self.task_delete(task)
+            self.bind_task_delete(task)
         self.update()
 
-    def description_updated(self) -> None:
+    def bind_description_updated(self) -> None:
         """This method handles the event of the user modifying the description of the Task on the List."""
         self.update()
