@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class TaskModel:
+class Task:
     name: str
     description: str
     completed: bool

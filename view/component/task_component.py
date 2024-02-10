@@ -2,26 +2,26 @@ from typing import Callable
 
 import flet as ft
 
-from entity.task import TaskModel
+from entity.task import Task
 
 
 class TaskComponent(ft.UserControl):
     def __init__(
         self,
-        name: str,
-        description: str,
-        completed: str,
+        model: Task,
         bind_task_status_change: Callable,
         bind_task_delete: Callable,
+        bind_name_updated: Callable,
         bind_description_updated: Callable,
     ):
         super().__init__()
         # Values held by the task
-        self.model = TaskModel(name=name, description=description, completed=completed)
+        self.model = model
 
         # Methods from TodoList that will be called on their respective actions:
         self.bind_task_status_change = bind_task_status_change
         self.bind_task_delete = bind_task_delete
+        self.bind_name_updated = bind_name_updated
         self.bind_description_updated = bind_description_updated
 
     def delete_clicked(self, e) -> None:
@@ -159,10 +159,12 @@ class TaskComponent(ft.UserControl):
         Args:
             e (_type_): _description_
         """
+        self.model.name = self.edit_name.value
         self.display_task.label = self.edit_name.value
         self.display_view.visible = True
         self.edit_name_view.visible = False
         self.update()
+        self.bind_name_updated()
 
     def save_description_clicked(self, e) -> None:
         """Concludes the process of modifying the description of this Task.

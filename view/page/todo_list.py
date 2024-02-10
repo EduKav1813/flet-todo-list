@@ -1,6 +1,7 @@
 import flet as ft
 
-from data.db import Database, Session, TasksTable
+from data.repositories.tasks_repository import TasksRepository, TaskStatusEnum
+from entity.task import Task
 from view.component.task_component import TaskComponent
 
 
@@ -9,18 +10,24 @@ class TodoList(ft.UserControl):
         self.items_left = ft.Text()
         self.new_task = ft.TextField(hint_text="Whats needs to be done?", expand=True)
         self.tasks = ft.Column()
-        self.database = Database()
-        self.load_tasks_from_database()
-        self.update_active_items_left(
-            len([task for task in self.tasks.controls if not task.model.completed])
-        )
+        self.tasks_repository = TasksRepository()
 
         self.filter = ft.Tabs(
             selected_index=0,
             on_change=self.bind_tabs_changed,
-            tabs=[ft.Tab(text="all"), ft.Tab(text="active"), ft.Tab(text="completed")],
+            tabs=[
+                ft.Tab(text=TaskStatusEnum.all.value),
+                ft.Tab(text=TaskStatusEnum.active.value),
+                ft.Tab(text=TaskStatusEnum.completed.value),
+            ],
         )
 
+        self.status = TaskStatusEnum.all
+        self.load_tasks_from_database()
+
+        self.update_active_items_left(
+            len([task for task in self.tasks.controls if not task.model.completed])
+        )
         self.view = ft.Column(
             width=600,
             controls=[
@@ -59,35 +66,21 @@ class TodoList(ft.UserControl):
 
     def update_database(self) -> None:
         """A method that saves the current state of the TodoList (Tasks) into the database."""
-        with Session(self.database.engine) as session:
-            if session.query(TasksTable).count() > 0:
-                session.query(TasksTable).delete()
-
-            for task in self.tasks.controls:
-                new_task = TasksTable(
-                    name=task.model.name,
-                    description=task.model.description,
-                    completed=task.model.completed,
-                )
-                session.add(new_task)
-
-            session.commit()
+        self.tasks_repository.update_all([task.model for task in self.tasks.controls])
 
     def load_tasks_from_database(self) -> None:
         """A method to set the current state of the TodoList (Tasks) from the database."""
-        with Session(self.database.engine) as session:
-            if session.query(TasksTable).count() > 0:
-                tasks = session.query(TasksTable).all()
-                for task in tasks:
-                    new_task = TaskComponent(
-                        name=task.name,
-                        description=task.description,
-                        completed=task.completed,
-                        bind_task_status_change=self.bind_task_status_changed,
-                        bind_task_delete=self.bind_task_delete,
-                        bind_description_updated=self.bind_description_updated,
-                    )
-                    self.tasks.controls.append(new_task)
+        tasks = self.tasks_repository.get_all_by_status(self.status)
+        self.tasks.controls = []
+        for task in tasks:
+            new_task = TaskComponent(
+                model=task,
+                bind_task_status_change=self.bind_task_status_changed,
+                bind_task_delete=self.bind_task_delete,
+                bind_name_updated=self.bind_name_updated,
+                bind_description_updated=self.bind_description_updated,
+            )
+            self.tasks.controls.append(new_task)
 
     def update_active_items_left(self, tasks_left: int):
         """Method to update the 'active items left' label.
@@ -98,20 +91,10 @@ class TodoList(ft.UserControl):
         self.items_left.value = f"{tasks_left} active item(s) left"
 
     def update(self):
-        status = self.filter.tabs[self.filter.selected_index].text
-        for task in self.tasks.controls:
-            task.visible = (
-                status == "all"
-                or (status == "active" and not task.model.completed)
-                or (status == "completed" and task.model.completed)
-            )
-
         tasks_left_count = [task.model.completed for task in self.tasks.controls].count(
             False
         )
         self.update_active_items_left(tasks_left_count)
-        self.update_database()
-
         super().update()
 
     def bind_task_delete(self, task: TaskComponent) -> None:
@@ -125,6 +108,7 @@ class TodoList(ft.UserControl):
 
     def bind_task_status_changed(self) -> None:
         """This method handles the event when the status of the Task in the TodoList was changed."""
+        self.tasks_repository.update_all([task.model for task in self.tasks.controls])
         self.update()
 
     def add_clicked(self, e) -> None:
@@ -138,15 +122,16 @@ class TodoList(ft.UserControl):
         label = self.new_task.value
         if label == "":
             return
-        task = TaskComponent(
-            name=label,
-            description="Details",
-            completed=False,
+        task_entity = Task(name=label, description="Details", completed=False)
+        self.tasks_repository.insert(task_entity)
+        task_component = TaskComponent(
+            model=task_entity,
             bind_task_status_change=self.bind_task_status_changed,
             bind_task_delete=self.bind_task_delete,
+            bind_name_updated=self.bind_name_updated,
             bind_description_updated=self.bind_description_updated,
         )
-        self.tasks.controls.append(task)
+        self.tasks.controls.append(task_component)
         self.new_task.value = ""
         self.update()
 
@@ -156,6 +141,9 @@ class TodoList(ft.UserControl):
         Args:
             e (_type_): _description_
         """
+        status_text = self.filter.tabs[self.filter.selected_index].text
+        self.status = TaskStatusEnum(status_text)
+        self.load_tasks_from_database()
         self.update()
 
     def clear_clicked(self, e) -> None:
@@ -171,6 +159,12 @@ class TodoList(ft.UserControl):
             self.bind_task_delete(task)
         self.update()
 
+    def bind_name_updated(self) -> None:
+        """This method handles the event of the user modifying the name of the Task on the List."""
+        self.tasks_repository.update_all([task.model for task in self.tasks.controls])
+        self.update()
+
     def bind_description_updated(self) -> None:
         """This method handles the event of the user modifying the description of the Task on the List."""
+        self.tasks_repository.update_all([task.model for task in self.tasks.controls])
         self.update()
