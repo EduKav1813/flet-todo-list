@@ -122,10 +122,10 @@ class TasksPage(ft.UserControl):
         label = self.new_task.value
         if label == "":
             return
-        task_entity = Task(name=label, description="Details", completed=False)
-        self.tasks_repository.insert(task_entity)
+        task = Task(id="", name=label, description="Details", completed=False)
+        self.tasks_repository.insert(task)
         task_component = TaskComponent(
-            model=task_entity,
+            model=task,
             on_task_status_changed=self.on_task_status_changed,
             on_task_deleted=self.on_task_deleted,
             on_name_updated=self.on_name_updated,
