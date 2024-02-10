@@ -80,7 +80,7 @@ class TodoList(ft.UserControl):
                 tasks = session.query(TasksTable).all()
                 for task in tasks:
                     new_task = Task(
-                        task_name=task.name,
+                        name=task.name,
                         description=task.description,
                         completed=task.completed,
                         bind_task_status_change=self.bind_task_status_changed,
@@ -139,7 +139,7 @@ class TodoList(ft.UserControl):
         if label == "":
             return
         task = Task(
-            task_name=label,
+            name=label,
             description="Details",
             completed=False,
             bind_task_status_change=self.bind_task_status_changed,

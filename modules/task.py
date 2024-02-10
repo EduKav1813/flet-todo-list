@@ -8,7 +8,7 @@ from models.task import TaskModel
 class Task(ft.UserControl):
     def __init__(
         self,
-        task_name: str,
+        name: str,
         description: str,
         completed: str,
         bind_task_status_change: Callable,
@@ -17,9 +17,7 @@ class Task(ft.UserControl):
     ):
         super().__init__()
         # Values held by the task
-        self.model = TaskModel(
-            name=task_name, description=description, completed=completed
-        )
+        self.model = TaskModel(name=name, description=description, completed=completed)
 
         # Methods from TodoList that will be called on their respective actions:
         self.bind_task_status_change = bind_task_status_change
