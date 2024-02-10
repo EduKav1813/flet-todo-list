@@ -1,7 +1,7 @@
 import flet as ft
 
-from modules.db import Database, Session, TasksTable
-from modules.task import Task
+from data.db import Database, Session, TasksTable
+from view.component.task_component import TaskComponent
 
 
 class TodoList(ft.UserControl):
@@ -79,7 +79,7 @@ class TodoList(ft.UserControl):
             if session.query(TasksTable).count() > 0:
                 tasks = session.query(TasksTable).all()
                 for task in tasks:
-                    new_task = Task(
+                    new_task = TaskComponent(
                         name=task.name,
                         description=task.description,
                         completed=task.completed,
@@ -114,7 +114,7 @@ class TodoList(ft.UserControl):
 
         super().update()
 
-    def bind_task_delete(self, task: Task) -> None:
+    def bind_task_delete(self, task: TaskComponent) -> None:
         """Remove the given task from the TodoList
 
         Args:
@@ -138,7 +138,7 @@ class TodoList(ft.UserControl):
         label = self.new_task.value
         if label == "":
             return
-        task = Task(
+        task = TaskComponent(
             name=label,
             description="Details",
             completed=False,

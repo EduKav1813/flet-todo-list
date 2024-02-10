@@ -1,6 +1,6 @@
 import flet as ft
 
-from modules.todo_list import TodoList
+from view.page.todo_list import TodoList
 
 
 def main(page: ft.Page):

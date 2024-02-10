@@ -2,10 +2,10 @@ from typing import Callable
 
 import flet as ft
 
-from models.task import TaskModel
+from entity.task import TaskModel
 
 
-class Task(ft.UserControl):
+class TaskComponent(ft.UserControl):
     def __init__(
         self,
         name: str,
