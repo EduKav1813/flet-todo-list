@@ -1,5 +1,8 @@
-import flet as ft
 from typing import Callable
+
+import flet as ft
+
+from models.task import TaskModel
 
 
 class Task(ft.UserControl):
@@ -14,9 +17,9 @@ class Task(ft.UserControl):
     ):
         super().__init__()
         # Values held by the task
-        self.completed = completed
-        self.task_name = task_name
-        self.description = description
+        self.model = TaskModel(
+            name=task_name, description=description, completed=completed
+        )
 
         # Methods from TodoList that will be called on their respective actions:
         self.bind_task_status_change = bind_task_status_change
@@ -33,12 +36,14 @@ class Task(ft.UserControl):
 
     def build(self):
         self.display_task = ft.Checkbox(
-            value=self.completed, label=self.task_name, on_change=self.status_changed
+            value=self.model.completed,
+            label=self.model.name,
+            on_change=self.status_changed,
         )
         self.edit_name = ft.TextField(expand=1)
 
         self.description_label = ft.Text(
-            self.description,
+            self.model.description,
             max_lines=3,
             selectable=True,
             overflow="ellipsis",
@@ -140,7 +145,7 @@ class Task(ft.UserControl):
         Args:
             e (_type_): _description_
         """
-        self.edit_description.value = self.description
+        self.edit_description.value = self.model.description
         self.description_view.visible = False
         self.edit_description_view.visible = True
         self.update()
@@ -172,8 +177,8 @@ class Task(ft.UserControl):
         Args:
             e (_type_): _description_
         """
-        self.description = str(self.edit_description.value).strip()
-        self.description_label.value = self.description
+        self.model.description = str(self.edit_description.value).strip()
+        self.description_label.value = self.model.description
         self.description_view.visible = True
         self.edit_description_view.visible = False
         self.update()
@@ -186,5 +191,5 @@ class Task(ft.UserControl):
         Args:
             e (_type_): _description_
         """
-        self.completed = self.display_task.value
+        self.model.completed = self.display_task.value
         self.bind_task_status_change()

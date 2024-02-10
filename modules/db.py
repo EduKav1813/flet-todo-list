@@ -1,7 +1,7 @@
-from sqlalchemy import create_engine, Column, Integer, String, Boolean
+import sqlalchemy as db
+from sqlalchemy import Boolean, Column, Integer, String, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session
-import sqlalchemy as db
 
 Base = declarative_base()
 

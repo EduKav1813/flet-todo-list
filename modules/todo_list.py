@@ -1,7 +1,7 @@
 import flet as ft
 
+from modules.db import Database, Session, TasksTable
 from modules.task import Task
-from modules.db import Database, TasksTable, Session
 
 
 class TodoList(ft.UserControl):
@@ -12,7 +12,7 @@ class TodoList(ft.UserControl):
         self.database = Database()
         self.load_tasks_from_database()
         self.update_active_items_left(
-            len([task for task in self.tasks.controls if not task.completed])
+            len([task for task in self.tasks.controls if not task.model.completed])
         )
 
         self.filter = ft.Tabs(
@@ -65,9 +65,9 @@ class TodoList(ft.UserControl):
 
             for task in self.tasks.controls:
                 new_task = TasksTable(
-                    name=task.task_name,
-                    description=task.description,
-                    completed=task.completed,
+                    name=task.model.name,
+                    description=task.model.description,
+                    completed=task.model.completed,
                 )
                 session.add(new_task)
 
@@ -102,11 +102,13 @@ class TodoList(ft.UserControl):
         for task in self.tasks.controls:
             task.visible = (
                 status == "all"
-                or (status == "active" and not task.completed)
-                or (status == "completed" and task.completed)
+                or (status == "active" and not task.model.completed)
+                or (status == "completed" and task.model.completed)
             )
 
-        tasks_left_count = [task.completed for task in self.tasks.controls].count(False)
+        tasks_left_count = [task.model.completed for task in self.tasks.controls].count(
+            False
+        )
         self.update_active_items_left(tasks_left_count)
         self.update_database()
 
@@ -164,7 +166,7 @@ class TodoList(ft.UserControl):
         Args:
             e (_type_): _description_
         """
-        completed_tasks = [task for task in self.tasks.controls if task.completed]
+        completed_tasks = [task for task in self.tasks.controls if task.model.completed]
         for task in completed_tasks:
             self.bind_task_delete(task)
         self.update()
