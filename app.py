@@ -1,6 +1,6 @@
 import flet as ft
 
-from view.page.todo_list import TodoList
+from view.page.task_page import TasksPage
 
 
 def main(page: ft.Page):
@@ -12,7 +12,7 @@ def main(page: ft.Page):
     page.update()
 
     # Create application instance
-    todo1 = TodoList()
+    todo1 = TasksPage()
 
     # Add application's root control to the page
     page.add(todo1)

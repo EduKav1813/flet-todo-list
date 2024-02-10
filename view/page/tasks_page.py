@@ -5,7 +5,7 @@ from entity.task import Task
 from view.component.task_component import TaskComponent
 
 
-class TodoList(ft.UserControl):
+class TasksPage(ft.UserControl):
     def build(self):
         self.items_left = ft.Text()
         self.new_task = ft.TextField(hint_text="Whats needs to be done?", expand=True)
