@@ -9,20 +9,20 @@ class TaskComponent(ft.UserControl):
     def __init__(
         self,
         model: Task,
-        bind_task_status_change: Callable,
-        bind_task_delete: Callable,
-        bind_name_updated: Callable,
-        bind_description_updated: Callable,
+        on_task_status_changed: Callable,
+        on_task_deleted: Callable,
+        on_name_updated: Callable,
+        on_description_updated: Callable,
     ):
         super().__init__()
         # Values held by the task
         self.model = model
 
         # Methods from TodoList that will be called on their respective actions:
-        self.bind_task_status_change = bind_task_status_change
-        self.bind_task_delete = bind_task_delete
-        self.bind_name_updated = bind_name_updated
-        self.bind_description_updated = bind_description_updated
+        self.on_task_status_changed = on_task_status_changed
+        self.on_task_deleted = on_task_deleted
+        self.on_name_updated = on_name_updated
+        self.on_description_updated = on_description_updated
 
     def delete_clicked(self, e) -> None:
         """Event handler for when the task is deleted.
@@ -30,7 +30,7 @@ class TaskComponent(ft.UserControl):
         Args:
             e (_type_): _description_
         """
-        self.bind_task_delete(self)
+        self.on_task_deleted(self)
 
     def build(self):
         self.display_task = ft.Checkbox(
@@ -164,7 +164,7 @@ class TaskComponent(ft.UserControl):
         self.display_view.visible = True
         self.edit_name_view.visible = False
         self.update()
-        self.bind_name_updated()
+        self.on_name_updated()
 
     def save_description_clicked(self, e) -> None:
         """Concludes the process of modifying the description of this Task.
@@ -182,7 +182,7 @@ class TaskComponent(ft.UserControl):
         self.description_view.visible = True
         self.edit_description_view.visible = False
         self.update()
-        self.bind_description_updated()
+        self.on_description_updated()
 
     def status_changed(self, e) -> None:
         """Event handler for when the status of the task is changed.
@@ -192,4 +192,4 @@ class TaskComponent(ft.UserControl):
             e (_type_): _description_
         """
         self.model.completed = self.display_task.value
-        self.bind_task_status_change()
+        self.on_task_status_changed()

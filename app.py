@@ -1,6 +1,6 @@
 import flet as ft
 
-from view.page.task_page import TasksPage
+from view.page.tasks_page import TasksPage
 
 
 def main(page: ft.Page):

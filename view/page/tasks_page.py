@@ -75,10 +75,10 @@ class TasksPage(ft.UserControl):
         for task in tasks:
             new_task = TaskComponent(
                 model=task,
-                bind_task_status_change=self.bind_task_status_changed,
-                bind_task_delete=self.bind_task_delete,
-                bind_name_updated=self.bind_name_updated,
-                bind_description_updated=self.bind_description_updated,
+                on_task_status_changed=self.on_task_status_changed,
+                on_task_deleted=self.on_task_deleted,
+                on_name_updated=self.on_name_updated,
+                on_description_updated=self.on_description_updated,
             )
             self.tasks.controls.append(new_task)
 
@@ -97,7 +97,7 @@ class TasksPage(ft.UserControl):
         self.update_active_items_left(tasks_left_count)
         super().update()
 
-    def bind_task_delete(self, task: TaskComponent) -> None:
+    def on_task_deleted(self, task: TaskComponent) -> None:
         """Remove the given task from the TodoList
 
         Args:
@@ -106,7 +106,7 @@ class TasksPage(ft.UserControl):
         self.tasks.controls.remove(task)
         self.update()
 
-    def bind_task_status_changed(self) -> None:
+    def on_task_status_changed(self) -> None:
         """This method handles the event when the status of the Task in the TodoList was changed."""
         self.tasks_repository.update_all([task.model for task in self.tasks.controls])
         self.update()
@@ -126,10 +126,10 @@ class TasksPage(ft.UserControl):
         self.tasks_repository.insert(task_entity)
         task_component = TaskComponent(
             model=task_entity,
-            bind_task_status_change=self.bind_task_status_changed,
-            bind_task_delete=self.bind_task_delete,
-            bind_name_updated=self.bind_name_updated,
-            bind_description_updated=self.bind_description_updated,
+            on_task_status_changed=self.on_task_status_changed,
+            on_task_deleted=self.on_task_deleted,
+            on_name_updated=self.on_name_updated,
+            on_description_updated=self.on_description_updated,
         )
         self.tasks.controls.append(task_component)
         self.new_task.value = ""
@@ -156,15 +156,15 @@ class TasksPage(ft.UserControl):
         """
         completed_tasks = [task for task in self.tasks.controls if task.model.completed]
         for task in completed_tasks:
-            self.bind_task_delete(task)
+            self.on_task_deleted(task)
         self.update()
 
-    def bind_name_updated(self) -> None:
+    def on_name_updated(self) -> None:
         """This method handles the event of the user modifying the name of the Task on the List."""
         self.tasks_repository.update_all([task.model for task in self.tasks.controls])
         self.update()
 
-    def bind_description_updated(self) -> None:
+    def on_description_updated(self) -> None:
         """This method handles the event of the user modifying the description of the Task on the List."""
         self.tasks_repository.update_all([task.model for task in self.tasks.controls])
         self.update()
