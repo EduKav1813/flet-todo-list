@@ -1,16 +1,27 @@
+from typing import List
+
 import flet as ft
 
-from data.repositories.tasks_repository import TasksRepository, TaskStatusEnum
+from data.repository.tasks_repository import TaskStatusEnum
+from data.state.tasks_page_state import TasksPageState
 from entity.task import Task
-from view.component.task_component import TaskComponent
+from presentation.component.task_component import TaskComponent
+from presentation.page.tasks.tasks_presenter import TasksPresenter
 
 
 class TasksPage(ft.UserControl):
+    def __init__(self, presenter: TasksPresenter, page: ft.Page) -> None:
+        super().__init__()
+        self.page = page
+        self.page_state = TasksPageState([], 0)
+        self.presenter = presenter
+
+        # UI Components
+        self.tasks = ft.Column()
+
     def build(self):
         self.items_left = ft.Text()
         self.new_task = ft.TextField(hint_text="Whats needs to be done?", expand=True)
-        self.tasks = ft.Column()
-        self.tasks_repository = TasksRepository()
 
         self.filter = ft.Tabs(
             selected_index=0,
@@ -23,11 +34,6 @@ class TasksPage(ft.UserControl):
         )
 
         self.status = TaskStatusEnum.all
-        self.load_tasks_from_database()
-
-        self.update_active_items_left(
-            len([task for task in self.tasks.controls if not task.model.completed])
-        )
         self.view = ft.Column(
             width=600,
             controls=[
@@ -64,51 +70,31 @@ class TasksPage(ft.UserControl):
         )
         return self.view
 
-    def update_database(self) -> None:
-        """A method that saves the current state of the TodoList (Tasks) into the database."""
-        self.tasks_repository.update_all([task.model for task in self.tasks.controls])
-
-    def load_tasks_from_database(self) -> None:
-        """A method to set the current state of the TodoList (Tasks) from the database."""
-        tasks = self.tasks_repository.get_all_by_status(self.status)
-        self.tasks.controls = []
-        for task in tasks:
-            new_task = TaskComponent(
+    def fill_tasks(self) -> None:
+        self.tasks.clean()
+        for task in self.page_state.tasks:
+            task_component = TaskComponent(
                 model=task,
                 on_task_status_changed=self.on_task_status_changed,
                 on_task_deleted=self.on_task_deleted,
                 on_name_updated=self.on_name_updated,
                 on_description_updated=self.on_description_updated,
             )
-            self.tasks.controls.append(new_task)
-
-    def update_active_items_left(self, tasks_left: int):
-        """Method to update the 'active items left' label.
-
-        Args:
-            tasks_left (int): The current amount of tasks left.
-        """
-        self.items_left.value = f"{tasks_left} active item(s) left"
+            self.tasks.controls.append(task_component)
 
     def update(self):
-        tasks_left_count = [task.model.completed for task in self.tasks.controls].count(
-            False
-        )
-        self.update_active_items_left(tasks_left_count)
+        self.update_active_items_left()
         super().update()
 
-    def on_task_deleted(self, task: TaskComponent) -> None:
-        """Remove the given task from the TodoList
+    def update_active_items_left(self) -> None:
+        """Method to update the 'active items left' label."""
+        self.items_left.value = (
+            f"{self.page_state.active_tasks_count} active item(s) left"
+        )
 
-        Args:
-            task (Task): Task to delete.
-        """
-        self.tasks.controls.remove(task)
-        self.update()
-
-    def on_task_status_changed(self) -> None:
-        """This method handles the event when the status of the Task in the TodoList was changed."""
-        self.tasks_repository.update_all([task.model for task in self.tasks.controls])
+    def show_tasks(self, tasks: List[Task], active_tasks_count: int) -> None:
+        self.page_state = TasksPageState(tasks, active_tasks_count)
+        self.fill_tasks()
         self.update()
 
     def add_clicked(self, e) -> None:
@@ -120,20 +106,14 @@ class TasksPage(ft.UserControl):
             e (_type_): _description_
         """
         label = self.new_task.value
+        self.new_task.value = ""
+
         if label == "":
             return
-        task = Task(id=None, name=label, description="Details", completed=False)
-        self.tasks_repository.insert(task)
-        task_component = TaskComponent(
-            model=task,
-            on_task_status_changed=self.on_task_status_changed,
-            on_task_deleted=self.on_task_deleted,
-            on_name_updated=self.on_name_updated,
-            on_description_updated=self.on_description_updated,
+
+        self.presenter.add_task(
+            Task(id=None, name=label, description="Details", completed=False)
         )
-        self.tasks.controls.append(task_component)
-        self.new_task.value = ""
-        self.update()
 
     def bind_tabs_changed(self, e) -> None:
         """This method handles the event of the user changing the current selected tab on the TodoList.
@@ -141,10 +121,8 @@ class TasksPage(ft.UserControl):
         Args:
             e (_type_): _description_
         """
-        status_text = self.filter.tabs[self.filter.selected_index].text
-        self.status = TaskStatusEnum(status_text)
-        self.load_tasks_from_database()
-        self.update()
+        status = TaskStatusEnum(self.filter.tabs[self.filter.selected_index].text)
+        self.presenter.filter_task_by(status)
 
     def clear_clicked(self, e) -> None:
         """This method handles the even of the clicking the 'Clear' button.
@@ -154,17 +132,26 @@ class TasksPage(ft.UserControl):
         Args:
             e (_type_): _description_
         """
-        completed_tasks = [task for task in self.tasks.controls if task.model.completed]
-        for task in completed_tasks:
-            self.on_task_deleted(task)
+        self.presenter.clear_completed_tasks()
         self.update()
 
-    def on_name_updated(self) -> None:
+    ## Callbacks to TaskComponent
+    def on_name_updated(self, task: TaskComponent) -> None:
         """This method handles the event of the user modifying the name of the Task on the List."""
-        self.tasks_repository.update_all([task.model for task in self.tasks.controls])
-        self.update()
+        self.presenter.update_task(task.model)
 
-    def on_description_updated(self) -> None:
+    def on_description_updated(self, task: TaskComponent) -> None:
         """This method handles the event of the user modifying the description of the Task on the List."""
-        self.tasks_repository.update_all([task.model for task in self.tasks.controls])
-        self.update()
+        self.presenter.update_task(task.model)
+
+    def on_task_status_changed(self, task: TaskComponent) -> None:
+        """This method handles the event when the status of the Task in the TodoList was changed."""
+        self.presenter.update_task(task.model)
+
+    def on_task_deleted(self, task: TaskComponent) -> None:
+        """Remove the given task from the TodoList
+
+        Args:
+            task (Task): Task to delete.
+        """
+        self.presenter.delete_task(task.model)

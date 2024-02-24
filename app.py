@@ -1,6 +1,7 @@
 import flet as ft
 
-from view.page.tasks_page import TasksPage
+from presentation.page.tasks.tasks_page import TasksPage
+from presentation.page.tasks.tasks_presenter import TasksPresenter
 
 
 def main(page: ft.Page):
@@ -9,13 +10,14 @@ def main(page: ft.Page):
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.scroll = "adaptive"
     page.theme_mode = ft.ThemeMode.LIGHT
-    page.update()
 
     # Create application instance
-    todo1 = TasksPage()
+    presenter = TasksPresenter()
+    tasks_page = TasksPage(presenter, page)
+    page.add(tasks_page)
+    presenter.bind(tasks_page)
 
     # Add application's root control to the page
-    page.add(todo1)
 
 
 if __name__ == "__main__":

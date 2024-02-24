@@ -21,6 +21,14 @@ class TasksRepository:
             session.add(task_to_tasktable_mapper(task))
             session.commit()
 
+    def update(self, task: Task) -> None:
+        with Session(self.database.engine) as session:
+            task_orm = session.query(TasksTable).where(TasksTable.id == task.id).one()
+            task_orm.name = task.name
+            task_orm.description = task.description
+            task_orm.completed = task.completed
+            session.commit()
+
     def update_all(self, tasks: List[Task]) -> None:
         with Session(self.database.engine) as session:
             if session.query(TasksTable).count() > 0:
@@ -29,6 +37,11 @@ class TasksRepository:
             for task in tasks:
                 session.add(task_to_tasktable_mapper(task))
             session.commit()
+
+    def get_by_id(self, task_id: int) -> Task:
+        with Session(self.database.engine) as session:
+            task = session.query(TasksTable).where(TasksTable.id == task_id).one()
+            return map(tasktable_to_task_mapper, task)
 
     def delete_by_id(self, task_id: int) -> None:
         with Session(self.database.engine) as session:

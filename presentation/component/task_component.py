@@ -164,7 +164,7 @@ class TaskComponent(ft.UserControl):
         self.display_view.visible = True
         self.edit_name_view.visible = False
         self.update()
-        self.on_name_updated()
+        self.on_name_updated(self)
 
     def save_description_clicked(self, e) -> None:
         """Concludes the process of modifying the description of this Task.
@@ -182,7 +182,7 @@ class TaskComponent(ft.UserControl):
         self.description_view.visible = True
         self.edit_description_view.visible = False
         self.update()
-        self.on_description_updated()
+        self.on_description_updated(self)
 
     def status_changed(self, e) -> None:
         """Event handler for when the status of the task is changed.
@@ -192,4 +192,4 @@ class TaskComponent(ft.UserControl):
             e (_type_): _description_
         """
         self.model.completed = self.display_task.value
-        self.on_task_status_changed()
+        self.on_task_status_changed(self)
