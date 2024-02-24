@@ -9,20 +9,16 @@ class TaskComponent(ft.UserControl):
     def __init__(
         self,
         model: Task,
-        on_task_status_changed: Callable,
-        on_task_deleted: Callable,
-        on_name_updated: Callable,
-        on_description_updated: Callable,
+        on_task_update: Callable,
+        on_task_delete: Callable,
     ):
         super().__init__()
         # Values held by the task
         self.model = model
 
         # Methods from TodoList that will be called on their respective actions:
-        self.on_task_status_changed = on_task_status_changed
-        self.on_task_deleted = on_task_deleted
-        self.on_name_updated = on_name_updated
-        self.on_description_updated = on_description_updated
+        self.on_task_update = on_task_update
+        self.on_task_delete = on_task_delete
 
     def delete_clicked(self, e) -> None:
         """Event handler for when the task is deleted.
@@ -30,7 +26,7 @@ class TaskComponent(ft.UserControl):
         Args:
             e (_type_): _description_
         """
-        self.on_task_deleted(self)
+        self.on_task_delete(self)
 
     def build(self):
         self.display_task = ft.Checkbox(
@@ -164,7 +160,7 @@ class TaskComponent(ft.UserControl):
         self.display_view.visible = True
         self.edit_name_view.visible = False
         self.update()
-        self.on_name_updated(self)
+        self.on_task_update(self)
 
     def save_description_clicked(self, e) -> None:
         """Concludes the process of modifying the description of this Task.
@@ -182,7 +178,7 @@ class TaskComponent(ft.UserControl):
         self.description_view.visible = True
         self.edit_description_view.visible = False
         self.update()
-        self.on_description_updated(self)
+        self.on_task_update(self)
 
     def status_changed(self, e) -> None:
         """Event handler for when the status of the task is changed.
@@ -192,4 +188,4 @@ class TaskComponent(ft.UserControl):
             e (_type_): _description_
         """
         self.model.completed = self.display_task.value
-        self.on_task_status_changed(self)
+        self.on_task_update(self)

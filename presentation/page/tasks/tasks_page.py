@@ -75,10 +75,8 @@ class TasksPage(ft.UserControl):
         for task in self.page_state.tasks:
             task_component = TaskComponent(
                 model=task,
-                on_task_status_changed=self.on_task_status_changed,
-                on_task_deleted=self.on_task_deleted,
-                on_name_updated=self.on_name_updated,
-                on_description_updated=self.on_description_updated,
+                on_task_update=self.on_task_update,
+                on_task_delete=self.on_task_delete,
             )
             self.tasks.controls.append(task_component)
 
@@ -136,19 +134,15 @@ class TasksPage(ft.UserControl):
         self.update()
 
     ## Callbacks to TaskComponent
-    def on_name_updated(self, task: TaskComponent) -> None:
-        """This method handles the event of the user modifying the name of the Task on the List."""
+    def on_task_update(self, task: TaskComponent) -> None:
+        """Called on any TaskComponent update
+
+        Args:
+            task (TaskComponent): _description_
+        """
         self.presenter.update_task(task.model)
 
-    def on_description_updated(self, task: TaskComponent) -> None:
-        """This method handles the event of the user modifying the description of the Task on the List."""
-        self.presenter.update_task(task.model)
-
-    def on_task_status_changed(self, task: TaskComponent) -> None:
-        """This method handles the event when the status of the Task in the TodoList was changed."""
-        self.presenter.update_task(task.model)
-
-    def on_task_deleted(self, task: TaskComponent) -> None:
+    def on_task_delete(self, task: TaskComponent) -> None:
         """Remove the given task from the TodoList
 
         Args:
