@@ -115,9 +115,6 @@ class TaskComponent(ft.UserControl):
     def on_edit_name_clicked(self, e) -> None:
         """Opens the name-edit-view for the user to change the name of the task.
         Other edit views may be opened in parallel, like description-edit-view.
-
-        Args:
-            e (_type_): _description_
         """
         self.edit_name.value = self.display_task.label
         self.display_view.visible = False
@@ -127,9 +124,6 @@ class TaskComponent(ft.UserControl):
     def on_edit_description_clicked(self, e) -> None:
         """Opens the description-edit-view for the user to change the description of the task.
         Other edit views may be opened in parallel, like name-edit-view.
-
-        Args:
-            e (_type_): _description_
         """
         self.edit_description.value = self.model.description
         self.description_view.visible = False
@@ -143,9 +137,6 @@ class TaskComponent(ft.UserControl):
         Default view of the Task is opened.
 
         Will also call respective update function from the TodoList.
-
-        Args:
-            e (_type_): _description_
         """
         self.model.name = self.edit_name.value
         self.display_task.label = self.edit_name.value
@@ -161,9 +152,6 @@ class TaskComponent(ft.UserControl):
         Default view of the Task is opened.
 
         Will also call respective update function from the TodoList.
-
-        Args:
-            e (_type_): _description_
         """
         self.model.description = str(self.edit_description.value).strip()
         self.description_label.value = self.model.description
@@ -174,10 +162,8 @@ class TaskComponent(ft.UserControl):
 
     def on_status_changed(self, e) -> None:
         """Event handler for when the status of the task is changed.
-        Will also call respective update function from the TodoList.
 
-        Args:
-            e (_type_): _description_
+        Will also call respective update function from the TodoList.
         """
         self.model.completed = self.display_task.value
         self.on_task_update(self)
