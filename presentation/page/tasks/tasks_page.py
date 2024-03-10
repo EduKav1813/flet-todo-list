@@ -99,9 +99,6 @@ class TasksPage(ft.UserControl):
         """This method handles adding the new task in the TodoList, when user clicks the 'Add' button.
 
         If the Task name is empty, task will not be created.
-
-        Args:
-            e (_type_): _description_
         """
         label = self.new_task.value
         self.new_task.value = ""
@@ -114,11 +111,7 @@ class TasksPage(ft.UserControl):
         )
 
     def bind_tabs_changed(self, e) -> None:
-        """This method handles the event of the user changing the current selected tab on the TodoList.
-
-        Args:
-            e (_type_): _description_
-        """
+        """This method handles the event of the user changing the current selected tab on the TodoList."""
         status = TaskStatusEnum(self.filter.tabs[self.filter.selected_index].text)
         self.presenter.filter_task_by(status)
 
@@ -126,9 +119,6 @@ class TasksPage(ft.UserControl):
         """This method handles the even of the clicking the 'Clear' button.
         This button clears all tasks that are in the 'completed' state.
         Tasks that are 'active' will remain on the list.
-
-        Args:
-            e (_type_): _description_
         """
         self.presenter.clear_completed_tasks()
         self.update()
@@ -138,7 +128,7 @@ class TasksPage(ft.UserControl):
         """Called on any TaskComponent update
 
         Args:
-            task (TaskComponent): _description_
+            task (TaskComponent): TaskComponent instance that triggered the update.
         """
         self.presenter.update_task(task.model)
 
@@ -146,6 +136,6 @@ class TasksPage(ft.UserControl):
         """Remove the given task from the TodoList
 
         Args:
-            task (Task): Task to delete.
+            task (TaskComponent): TaskComponent instance that triggered deletion.
         """
         self.presenter.delete_task(task.model)
