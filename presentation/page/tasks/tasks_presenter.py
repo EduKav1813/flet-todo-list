@@ -16,12 +16,12 @@ class TasksPresenter:
 
     def bind(self, view) -> None:
         self.view = view
-        self.update_view()
+        self.show_tasks()
 
     def unbind(self) -> None:
         self.view = None
 
-    def update_view(self) -> None:
+    def show_tasks(self) -> None:
         if self.view:
             self.view.show_tasks(
                 self.tasks_repository.get_all_by_status(self.task_status_filter_type),
@@ -33,19 +33,19 @@ class TasksPresenter:
 
     def add_task(self, task: Task) -> None:
         self.tasks_repository.insert(task)
-        self.update_view()
+        self.show_tasks()
 
     def filter_task_by(self, task_status_filter_type: TaskStatusEnum) -> None:
         self.task_status_filter_type = task_status_filter_type
-        self.update_view()
+        self.show_tasks()
 
     def update_task(self, task: Task) -> None:
         self.tasks_repository.update(task)
-        self.update_view()
+        self.show_tasks()
 
     def delete_task(self, task) -> None:
         self.tasks_repository.delete_by_id(task.id)
-        self.update_view()
+        self.show_tasks()
 
     def clear_completed_tasks(self) -> None:
         completed_tasks = self.tasks_repository.get_all_by_status(
@@ -53,4 +53,4 @@ class TasksPresenter:
         )
         for task in completed_tasks:
             self.tasks_repository.delete_by_id(task.id)
-        self.update_view()
+        self.show_tasks()
