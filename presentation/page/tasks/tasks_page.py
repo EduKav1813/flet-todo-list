@@ -121,7 +121,6 @@ class TasksPage(ft.UserControl):
         Tasks that are 'active' will remain on the list.
         """
         self.presenter.clear_completed_tasks()
-        self.update()
 
     ## Callbacks to TaskComponent
     def on_task_update(self, task: TaskComponent) -> None:
