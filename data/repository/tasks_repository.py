@@ -7,9 +7,9 @@ from entity.task import Task
 
 
 class TaskStatus(Enum):
-    all = "all"
-    active = "active"
-    completed = "completed"
+    ALL = "all"
+    ACTIVE = "active"
+    COMPLETED = "completed"
 
 
 class TasksRepository:
@@ -53,13 +53,13 @@ class TasksRepository:
         with Session(self.database.engine) as session:
             tasks = []
 
-            if status == TaskStatus.all:
+            if status == TaskStatus.ALL:
                 tasks.extend(session.query(TasksTable).all())
-            elif status == TaskStatus.active:
+            elif status == TaskStatus.ACTIVE:
                 tasks.extend(
                     session.query(TasksTable).where(TasksTable.completed == False).all()
                 )
-            elif status == TaskStatus.completed:
+            elif status == TaskStatus.COMPLETED:
                 tasks.extend(
                     session.query(TasksTable).where(TasksTable.completed == True).all()
                 )

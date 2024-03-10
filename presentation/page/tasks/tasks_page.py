@@ -27,13 +27,13 @@ class TasksPage(ft.UserControl):
             selected_index=0,
             on_change=self.bind_tabs_changed,
             tabs=[
-                ft.Tab(text=TaskStatus.all.value),
-                ft.Tab(text=TaskStatus.active.value),
-                ft.Tab(text=TaskStatus.completed.value),
+                ft.Tab(text=TaskStatus.ALL.value),
+                ft.Tab(text=TaskStatus.ACTIVE.value),
+                ft.Tab(text=TaskStatus.COMPLETED.value),
             ],
         )
 
-        self.status = TaskStatus.all
+        self.status = TaskStatus.ALL
         self.view = ft.Column(
             width=600,
             controls=[

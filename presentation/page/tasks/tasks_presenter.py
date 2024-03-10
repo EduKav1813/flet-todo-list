@@ -11,7 +11,7 @@ class TasksPresenter:
 
     def __init__(self) -> None:
         self.view = None
-        self.task_status_filter_type = TaskStatus.all
+        self.task_status_filter_type = TaskStatus.ALL
         self.tasks_repository = TasksRepository()
 
     def bind(self, view) -> None:
@@ -29,7 +29,7 @@ class TasksPresenter:
             )
 
     def get_active_tasks_count(self) -> int:
-        return len(list(self.tasks_repository.get_all_by_status(TaskStatus.active)))
+        return len(list(self.tasks_repository.get_all_by_status(TaskStatus.ACTIVE)))
 
     def add_task(self, task: Task) -> None:
         self.tasks_repository.insert(task)
@@ -48,9 +48,7 @@ class TasksPresenter:
         self.show_tasks()
 
     def clear_completed_tasks(self) -> None:
-        completed_tasks = self.tasks_repository.get_all_by_status(
-            TaskStatus.completed
-        )
+        completed_tasks = self.tasks_repository.get_all_by_status(TaskStatus.COMPLETED)
         for task in completed_tasks:
             self.tasks_repository.delete_by_id(task.id)
         self.show_tasks()
