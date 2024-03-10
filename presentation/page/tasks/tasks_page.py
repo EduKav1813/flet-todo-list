@@ -2,7 +2,7 @@ from typing import List
 
 import flet as ft
 
-from data.repository.tasks_repository import TaskStatusEnum
+from data.repository.tasks_repository import TaskStatus
 from data.state.tasks_page_state import TasksPageState
 from entity.task import Task
 from presentation.component.task_component import TaskComponent
@@ -27,13 +27,13 @@ class TasksPage(ft.UserControl):
             selected_index=0,
             on_change=self.bind_tabs_changed,
             tabs=[
-                ft.Tab(text=TaskStatusEnum.all.value),
-                ft.Tab(text=TaskStatusEnum.active.value),
-                ft.Tab(text=TaskStatusEnum.completed.value),
+                ft.Tab(text=TaskStatus.all.value),
+                ft.Tab(text=TaskStatus.active.value),
+                ft.Tab(text=TaskStatus.completed.value),
             ],
         )
 
-        self.status = TaskStatusEnum.all
+        self.status = TaskStatus.all
         self.view = ft.Column(
             width=600,
             controls=[
@@ -112,7 +112,7 @@ class TasksPage(ft.UserControl):
 
     def bind_tabs_changed(self, e) -> None:
         """This method handles the event of the user changing the current selected tab on the TodoList."""
-        status = TaskStatusEnum(self.filter.tabs[self.filter.selected_index].text)
+        status = TaskStatus(self.filter.tabs[self.filter.selected_index].text)
         self.presenter.filter_task_by(status)
 
     def clear_clicked(self, e) -> None:

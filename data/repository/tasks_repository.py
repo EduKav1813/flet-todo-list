@@ -6,7 +6,7 @@ from data.db.mappers import task_to_tasktable_mapper, tasktable_to_task_mapper
 from entity.task import Task
 
 
-class TaskStatusEnum(Enum):
+class TaskStatus(Enum):
     all = "all"
     active = "active"
     completed = "completed"
@@ -49,17 +49,17 @@ class TasksRepository:
             session.delete(task)
             session.commit()
 
-    def get_all_by_status(self, status=TaskStatusEnum) -> List[Task]:
+    def get_all_by_status(self, status=TaskStatus) -> List[Task]:
         with Session(self.database.engine) as session:
             tasks = []
 
-            if status == TaskStatusEnum.all:
+            if status == TaskStatus.all:
                 tasks.extend(session.query(TasksTable).all())
-            elif status == TaskStatusEnum.active:
+            elif status == TaskStatus.active:
                 tasks.extend(
                     session.query(TasksTable).where(TasksTable.completed == False).all()
                 )
-            elif status == TaskStatusEnum.completed:
+            elif status == TaskStatus.completed:
                 tasks.extend(
                     session.query(TasksTable).where(TasksTable.completed == True).all()
                 )
