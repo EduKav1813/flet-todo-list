@@ -20,19 +20,11 @@ class TaskComponent(ft.UserControl):
         self.on_task_update = on_task_update
         self.on_task_delete = on_task_delete
 
-    def delete_clicked(self, e) -> None:
-        """Event handler for when the task is deleted.
-
-        Args:
-            e (_type_): _description_
-        """
-        self.on_task_delete(self)
-
     def build(self):
         self.display_task = ft.Checkbox(
             value=self.model.completed,
             label=self.model.name,
-            on_change=self.status_changed,
+            on_change=self.on_status_changed,
         )
         self.edit_name = ft.TextField(expand=1)
 
@@ -56,12 +48,12 @@ class TaskComponent(ft.UserControl):
                         ft.IconButton(
                             icon=ft.icons.CREATE_OUTLINED,
                             tooltip="Edit To-Do",
-                            on_click=self.edit_name_clicked,
+                            on_click=self.on_edit_name_clicked,
                         ),
                         ft.IconButton(
                             ft.icons.DELETE_OUTLINE,
                             tooltip="Delete To-Do",
-                            on_click=self.delete_clicked,
+                            on_click=self.on_task_delete,
                         ),
                     ],
                 ),
@@ -78,7 +70,7 @@ class TaskComponent(ft.UserControl):
                     icon=ft.icons.DONE_OUTLINE_OUTLINED,
                     icon_color=ft.colors.GREEN,
                     tooltip="Update To-Do",
-                    on_click=self.save_name_clicked,
+                    on_click=self.on_save_name_clicked,
                 ),
             ],
         )
@@ -92,7 +84,7 @@ class TaskComponent(ft.UserControl):
                 ft.IconButton(
                     icon=ft.icons.CREATE_OUTLINED,
                     tooltip="Edit Description",
-                    on_click=self.edit_description_clicked,
+                    on_click=self.on_edit_description_clicked,
                 ),
             ],
         )
@@ -107,7 +99,7 @@ class TaskComponent(ft.UserControl):
                     icon=ft.icons.DONE_OUTLINE_OUTLINED,
                     icon_color=ft.colors.GREEN,
                     tooltip="Update Description",
-                    on_click=self.save_description_clicked,
+                    on_click=self.on_save_description_clicked,
                 ),
             ],
         )
@@ -120,7 +112,7 @@ class TaskComponent(ft.UserControl):
             ]
         )
 
-    def edit_name_clicked(self, e) -> None:
+    def on_edit_name_clicked(self, e) -> None:
         """Opens the name-edit-view for the user to change the name of the task.
         Other edit views may be opened in parallel, like description-edit-view.
 
@@ -132,7 +124,7 @@ class TaskComponent(ft.UserControl):
         self.edit_name_view.visible = True
         self.update()
 
-    def edit_description_clicked(self, e) -> None:
+    def on_edit_description_clicked(self, e) -> None:
         """Opens the description-edit-view for the user to change the description of the task.
         Other edit views may be opened in parallel, like name-edit-view.
 
@@ -144,7 +136,7 @@ class TaskComponent(ft.UserControl):
         self.edit_description_view.visible = True
         self.update()
 
-    def save_name_clicked(self, e) -> None:
+    def on_save_name_clicked(self, e) -> None:
         """Concludes the process of modifying the name of this Task.
         The typed text in the text field is saved as the new task name,
         and name modifying view is closed.
@@ -162,7 +154,7 @@ class TaskComponent(ft.UserControl):
         self.update()
         self.on_task_update(self)
 
-    def save_description_clicked(self, e) -> None:
+    def on_save_description_clicked(self, e) -> None:
         """Concludes the process of modifying the description of this Task.
         The typed text in the text field is saved as the new task description,
         and description modifying view is closed.
@@ -180,7 +172,7 @@ class TaskComponent(ft.UserControl):
         self.update()
         self.on_task_update(self)
 
-    def status_changed(self, e) -> None:
+    def on_status_changed(self, e) -> None:
         """Event handler for when the status of the task is changed.
         Will also call respective update function from the TodoList.
 
