@@ -50,7 +50,7 @@ class TasksRepository:
         self.database.execute(session_processor)
 
     def get_all_by_status(self, status=TaskStatus) -> List[Task]:
-        def session_processor(session) -> Iterable:
+        def session_processor(session) -> list:
             tasks = []
 
             if status == TaskStatus.ALL:
@@ -64,6 +64,6 @@ class TasksRepository:
                     session.query(TasksTable).where(TasksTable.completed == True).all()
                 )
 
-            return map(tasktable_to_task_mapper, tasks)
+            return list(map(tasktable_to_task_mapper, tasks))
 
         return self.database.execute(session_processor)

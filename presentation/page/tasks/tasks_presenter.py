@@ -29,7 +29,7 @@ class TasksPresenter:
             )
 
     def get_active_tasks_count(self) -> int:
-        return len(list(self.tasks_repository.get_all_by_status(TaskStatus.ACTIVE)))
+        return len(self.tasks_repository.get_all_by_status(TaskStatus.ACTIVE))
 
     def add_task(self, task: Task) -> None:
         self.tasks_repository.insert(task)
