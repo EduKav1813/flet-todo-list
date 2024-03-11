@@ -1,15 +1,9 @@
-from enum import Enum
 from typing import Iterable, List
 
 from data.db.database import Database, TasksTable
 from data.db.mappers import task_to_tasktable_mapper, tasktable_to_task_mapper
 from entity.task import Task
-
-
-class TaskStatus(Enum):
-    ALL = "all"
-    ACTIVE = "active"
-    COMPLETED = "completed"
+from entity.task_status import TaskStatus
 
 
 class TasksRepository:
