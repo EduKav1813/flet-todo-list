@@ -1,7 +1,9 @@
-from sqlalchemy import create_engine, Column, Integer, String, Boolean
+from typing import Any, Callable
+
+import sqlalchemy as db
+from sqlalchemy import Boolean, Column, Integer, String, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session
-import sqlalchemy as db
 
 Base = declarative_base()
 
@@ -41,3 +43,20 @@ class Database:
     def create_db(self) -> None:
         """Ensure that the database exists with given schema."""
         Base.metadata.create_all(self.engine)
+
+    def execute(self, session_processor: Callable) -> None | Any:
+        """Execute given database command (session_processor callable)
+        and commit to the database.
+
+        Args:
+            session_processor (Callable):
+                A callable that will be executed withing the database session.
+
+        Returns:
+            Any output that the session_processor may return on it's own.
+            If there is not return statement, return None.
+        """
+        with Session(self.engine) as session:
+            result = session_processor(session)
+            session.commit()
+            return result
