@@ -53,7 +53,7 @@ class TaskComponent(ft.UserControl):
                         ft.IconButton(
                             ft.icons.DELETE_OUTLINE,
                             tooltip="Delete To-Do",
-                            on_click=self.on_task_delete,
+                            on_click=lambda e: self.on_task_delete(self),
                         ),
                     ],
                 ),
