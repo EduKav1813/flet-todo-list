@@ -74,7 +74,7 @@ class TasksPage(ft.UserControl):
         self.tasks.clean()
         for task in self.page_state.tasks:
             task_component = TaskComponent(
-                model=task,
+                task=task,
                 on_task_update=self.on_task_update,
                 on_task_delete=self.on_task_delete,
             )
@@ -129,7 +129,7 @@ class TasksPage(ft.UserControl):
         Args:
             task (TaskComponent): TaskComponent instance that triggered the update.
         """
-        self.presenter.update_task(task.model)
+        self.presenter.update_task(task.task)
 
     def on_task_delete(self, task: TaskComponent) -> None:
         """Remove the given task from the TodoList
@@ -137,4 +137,4 @@ class TasksPage(ft.UserControl):
         Args:
             task (TaskComponent): TaskComponent instance that triggered deletion.
         """
-        self.presenter.delete_task(task.model)
+        self.presenter.delete_task(task.task)

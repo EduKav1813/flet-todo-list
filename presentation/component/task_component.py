@@ -8,13 +8,13 @@ from entity.task import Task
 class TaskComponent(ft.UserControl):
     def __init__(
         self,
-        model: Task,
+        task: Task,
         on_task_update: Callable,
         on_task_delete: Callable,
     ):
         super().__init__()
         # Values held by the task
-        self.model = model
+        self.task = task
 
         # Methods from TodoList that will be called on their respective actions:
         self.on_task_update = on_task_update
@@ -22,14 +22,14 @@ class TaskComponent(ft.UserControl):
 
     def build(self):
         self.display_task = ft.Checkbox(
-            value=self.model.completed,
-            label=self.model.name,
+            value=self.task.completed,
+            label=self.task.name,
             on_change=self.on_status_changed,
         )
         self.edit_name = ft.TextField(expand=1)
 
         self.description_label = ft.Text(
-            self.model.description,
+            self.task.description,
             max_lines=3,
             selectable=True,
             overflow="ellipsis",
@@ -125,7 +125,7 @@ class TaskComponent(ft.UserControl):
         """Opens the description-edit-view for the user to change the description of the task.
         Other edit views may be opened in parallel, like name-edit-view.
         """
-        self.edit_description.value = self.model.description
+        self.edit_description.value = self.task.description
         self.description_view.visible = False
         self.edit_description_view.visible = True
         self.update()
@@ -138,7 +138,7 @@ class TaskComponent(ft.UserControl):
 
         Will also call respective update function from the TodoList.
         """
-        self.model.name = self.edit_name.value
+        self.task.name = self.edit_name.value
         self.display_task.label = self.edit_name.value
         self.display_view.visible = True
         self.edit_name_view.visible = False
@@ -153,8 +153,8 @@ class TaskComponent(ft.UserControl):
 
         Will also call respective update function from the TodoList.
         """
-        self.model.description = str(self.edit_description.value).strip()
-        self.description_label.value = self.model.description
+        self.task.description = str(self.edit_description.value).strip()
+        self.description_label.value = self.task.description
         self.description_view.visible = True
         self.edit_description_view.visible = False
         self.update()
@@ -165,5 +165,5 @@ class TaskComponent(ft.UserControl):
 
         Will also call respective update function from the TodoList.
         """
-        self.model.completed = self.display_task.value
+        self.task.completed = self.display_task.value
         self.on_task_update(self)
