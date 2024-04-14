@@ -2,24 +2,21 @@ from typing import Any
 
 from data.repository.tasks_repository import TasksRepository, TaskStatus
 from entity.task import Task
+from presentation.presenter import BasePresenter
 
 
-class TasksPresenter:
+class TasksPresenter(BasePresenter):
     tasks_repository: TasksRepository
-    view: Any
     task_status_filter_type: TaskStatus
 
     def __init__(self) -> None:
-        self.view = None
+        super().__init__()
         self.task_status_filter_type = TaskStatus.ALL
         self.tasks_repository = TasksRepository()
 
     def bind(self, view) -> None:
-        self.view = view
+        super().bind(view)
         self.show_tasks()
-
-    def unbind(self) -> None:
-        self.view = None
 
     def show_tasks(self) -> None:
         if self.view:
