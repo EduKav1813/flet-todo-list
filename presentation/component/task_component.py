@@ -1,44 +1,35 @@
-import flet as ft
 from typing import Callable
 
+import flet as ft
 
-class Task(ft.UserControl):
+from entity.task import Task
+
+
+class TaskComponent(ft.UserControl):
     def __init__(
         self,
-        task_name: str,
-        description: str,
-        completed: str,
-        bind_task_status_change: Callable,
-        bind_task_delete: Callable,
-        bind_description_updated: Callable,
+        task: Task,
+        on_task_update: Callable,
+        on_task_delete: Callable,
     ):
         super().__init__()
         # Values held by the task
-        self.completed = completed
-        self.task_name = task_name
-        self.description = description
+        self.task = task
 
         # Methods from TodoList that will be called on their respective actions:
-        self.bind_task_status_change = bind_task_status_change
-        self.bind_task_delete = bind_task_delete
-        self.bind_description_updated = bind_description_updated
-
-    def delete_clicked(self, e) -> None:
-        """Event handler for when the task is deleted.
-
-        Args:
-            e (_type_): _description_
-        """
-        self.bind_task_delete(self)
+        self.on_task_update = on_task_update
+        self.on_task_delete = on_task_delete
 
     def build(self):
         self.display_task = ft.Checkbox(
-            value=self.completed, label=self.task_name, on_change=self.status_changed
+            value=self.task.completed,
+            label=self.task.name,
+            on_change=self.on_status_changed,
         )
         self.edit_name = ft.TextField(expand=1)
 
         self.description_label = ft.Text(
-            self.description,
+            self.task.description,
             max_lines=3,
             selectable=True,
             overflow="ellipsis",
@@ -57,12 +48,12 @@ class Task(ft.UserControl):
                         ft.IconButton(
                             icon=ft.icons.CREATE_OUTLINED,
                             tooltip="Edit To-Do",
-                            on_click=self.edit_name_clicked,
+                            on_click=self.on_edit_name_clicked,
                         ),
                         ft.IconButton(
                             ft.icons.DELETE_OUTLINE,
                             tooltip="Delete To-Do",
-                            on_click=self.delete_clicked,
+                            on_click=lambda e: self.on_task_delete(self),
                         ),
                     ],
                 ),
@@ -79,7 +70,7 @@ class Task(ft.UserControl):
                     icon=ft.icons.DONE_OUTLINE_OUTLINED,
                     icon_color=ft.colors.GREEN,
                     tooltip="Update To-Do",
-                    on_click=self.save_name_clicked,
+                    on_click=self.on_save_name_clicked,
                 ),
             ],
         )
@@ -93,7 +84,7 @@ class Task(ft.UserControl):
                 ft.IconButton(
                     icon=ft.icons.CREATE_OUTLINED,
                     tooltip="Edit Description",
-                    on_click=self.edit_description_clicked,
+                    on_click=self.on_edit_description_clicked,
                 ),
             ],
         )
@@ -108,7 +99,7 @@ class Task(ft.UserControl):
                     icon=ft.icons.DONE_OUTLINE_OUTLINED,
                     icon_color=ft.colors.GREEN,
                     tooltip="Update Description",
-                    on_click=self.save_description_clicked,
+                    on_click=self.on_save_description_clicked,
                 ),
             ],
         )
@@ -121,70 +112,58 @@ class Task(ft.UserControl):
             ]
         )
 
-    def edit_name_clicked(self, e) -> None:
+    def on_edit_name_clicked(self, e) -> None:
         """Opens the name-edit-view for the user to change the name of the task.
         Other edit views may be opened in parallel, like description-edit-view.
-
-        Args:
-            e (_type_): _description_
         """
         self.edit_name.value = self.display_task.label
         self.display_view.visible = False
         self.edit_name_view.visible = True
         self.update()
 
-    def edit_description_clicked(self, e) -> None:
+    def on_edit_description_clicked(self, e) -> None:
         """Opens the description-edit-view for the user to change the description of the task.
         Other edit views may be opened in parallel, like name-edit-view.
-
-        Args:
-            e (_type_): _description_
         """
-        self.edit_description.value = self.description
+        self.edit_description.value = self.task.description
         self.description_view.visible = False
         self.edit_description_view.visible = True
         self.update()
 
-    def save_name_clicked(self, e) -> None:
+    def on_save_name_clicked(self, e) -> None:
         """Concludes the process of modifying the name of this Task.
         The typed text in the text field is saved as the new task name,
         and name modifying view is closed.
         Default view of the Task is opened.
 
         Will also call respective update function from the TodoList.
-
-        Args:
-            e (_type_): _description_
         """
+        self.task.name = self.edit_name.value
         self.display_task.label = self.edit_name.value
         self.display_view.visible = True
         self.edit_name_view.visible = False
         self.update()
+        self.on_task_update(self)
 
-    def save_description_clicked(self, e) -> None:
+    def on_save_description_clicked(self, e) -> None:
         """Concludes the process of modifying the description of this Task.
         The typed text in the text field is saved as the new task description,
         and description modifying view is closed.
         Default view of the Task is opened.
 
         Will also call respective update function from the TodoList.
-
-        Args:
-            e (_type_): _description_
         """
-        self.description = str(self.edit_description.value).strip()
-        self.description_label.value = self.description
+        self.task.description = str(self.edit_description.value).strip()
+        self.description_label.value = self.task.description
         self.description_view.visible = True
         self.edit_description_view.visible = False
         self.update()
-        self.bind_description_updated()
+        self.on_task_update(self)
 
-    def status_changed(self, e) -> None:
+    def on_status_changed(self, e) -> None:
         """Event handler for when the status of the task is changed.
-        Will also call respective update function from the TodoList.
 
-        Args:
-            e (_type_): _description_
+        Will also call respective update function from the TodoList.
         """
-        self.completed = self.display_task.value
-        self.bind_task_status_change()
+        self.task.completed = self.display_task.value
+        self.on_task_update(self)
