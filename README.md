@@ -8,13 +8,13 @@ This serves as an excercise in GUI application development and using related pat
 
 ## Features
 
-This aplication can:
+This application features:
 
-- Manage list of tasks.
+- A list of tasks that you can manage.
 - Add and Edit description for the tasks.
-- Views with All, Active and Completed tasks.
+- Views for All, Active and Completed tasks.
 - Undo completed tasks if needed.
-- Delete completed tasks.
+- Delete all completed tasks.
 - Store and Load tasks in local database.
 
 ## Screenshots
