@@ -2,7 +2,7 @@ from typing import Any
 
 from data.repository.tasks_repository import TasksRepository, TaskStatus
 from entity.task import Task
-from presentation.presenter import BasePresenter
+from presentation.base_presenter import BasePresenter
 
 
 class TasksPresenter(BasePresenter):
