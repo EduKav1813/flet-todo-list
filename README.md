@@ -4,11 +4,18 @@
 
 Simple todo-list project writtein in flutter-based framework Flet.
 
-Application manages user-defined tasks, with possibility to add descriptio to each of them.
-Tasks are stored in local database and are imported on restart.
-There is also a function to clear all completed tasks, to avoid list cluttering.
-
 This serves as an excercise in GUI application development and using related patterns (MVP)
+
+## Features
+
+This aplication can:
+
+- Manage list of tasks.
+- Add and Edit description for the tasks.
+- Views with All, Active and Completed tasks.
+- Undo completed tasks if needed.
+- Delete completed tasks.
+- Store and Load tasks in local database.
 
 ## Screenshots
 
