@@ -4,7 +4,7 @@
 
 Simple todo-list project writtein in flutter-based framework Flet.
 
-This serves as an excercise in GUI application development and using related patterns (MVP)
+This serves as an exercise in GUI application development and using related patterns (MVP)
 
 ## Features
 
